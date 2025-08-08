@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gestão de Campeonato</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Sistema de Gestão de Campeonato</h1>
+            <div class="status-indicator">
+                <span id="connection-status" class="status offline">Offline</span>
+                <span id="mode-indicator" class="mode">Modo: <span id="current-mode">Desenvolvimento</span></span>
+            </div>
+        </header>
+
+        <main>
+            <div class="controls">
+                <button id="refresh-data" class="btn primary">Atualizar Dados</button>
+                <button id="toggle-mode" class="btn secondary">Alternar Modo</button>
+                <button id="test-connection" class="btn info">Testar Conexão</button>
+            </div>
+
+            <div class="error-message" id="error-message" style="display: none;"></div>
+            <div class="success-message" id="success-message" style="display: none;"></div>
+            <div class="loading" id="loading" style="display: none;">Carregando...</div>
+
+            <section class="data-section">
+                <h2>Dados do Campeonato</h2>
+                <div class="data-grid" id="championship-data">
+                    <p>Carregue os dados do campeonato usando o botão "Atualizar Dados"</p>
+                </div>
+            </section>
+
+            <section class="form-section">
+                <h2>Adicionar/Editar Dados</h2>
+                <form id="championship-form">
+                    <div class="form-group">
+                        <label for="team-name">Nome da Equipe:</label>
+                        <input type="text" id="team-name" name="teamName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="points">Pontos:</label>
+                        <input type="number" id="points" name="points" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="matches-played">Jogos Disputados:</label>
+                        <input type="number" id="matches-played" name="matchesPlayed" min="0" required>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn primary">Salvar</button>
+                        <button type="reset" class="btn secondary">Limpar</button>
+                    </div>
+                </form>
+            </section>
+
+            <section class="logs-section">
+                <h2>Logs de Depuração</h2>
+                <div class="log-container" id="debug-logs">
+                    <p>Os logs de depuração aparecerão aqui...</p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="config.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
