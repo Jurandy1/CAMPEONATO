@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel do Time - Campeonato Manager</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/team.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <i class="fas fa-futbol"></i>
+                <h1>Painel do Time</h1>
+            </div>
+            <nav class="nav">
+                <a href="index.html" class="nav-link">
+                    <i class="fas fa-home"></i> Voltar ao Site
+                </a>
+                <button class="btn-login" onclick="auth.logout()">
+                    <i class="fas fa-sign-out-alt"></i> Sair
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <div class="team-container">
+        <aside class="team-sidebar">
+            <div class="team-info-card">
+                <div class="team-logo-large" id="teamLogoLarge">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <h3 id="teamName">Carregando...</h3>
+                <p id="teamResponsavel">Responsável</p>
+            </div>
+            
+            <nav class="team-nav">
+                <a href="#overview" class="team-nav-link active" data-section="overview">
+                    <i class="fas fa-tachometer-alt"></i> Visão Geral
+                </a>
+                <a href="#players" class="team-nav-link" data-section="players">
+                    <i class="fas fa-users"></i> Meus Jogadores
+                </a>
+                <a href="#matches" class="team-nav-link" data-section="matches">
+                    <i class="fas fa-futbol"></i> Nossas Partidas
+                </a>
+                <a href="#statistics" class="team-nav-link" data-section="statistics">
+                    <i class="fas fa-chart-bar"></i> Estatísticas
+                </a>
+                <a href="#profile" class="team-nav-link" data-section="profile">
+                    <i class="fas fa-cog"></i> Perfil do Time
+                </a>
+            </nav>
+        </aside>
+
+        <main class="team-main">
+            <!-- Overview Section -->
+            <section id="team-overview" class="team-section active">
+                <div class="team-header">
+                    <h2>Visão Geral</h2>
+                    <div class="team-actions">
+                        <button class="btn btn-primary" onclick="refreshTeamData()">
+                            <i class="fas fa-sync-alt"></i> Atualizar
+                        </button>
+                    </div>
+                </div>
+
+                <div class="team-stats-grid">
+                    <div class="team-stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="totalTeamPlayers">0</h3>
+                            <p>Jogadores</p>
+                        </div>
+                    </div>
+                    <div class="team-stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-futbol"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="totalTeamMatches">0</h3>
+                            <p>Partidas</p>
+                        </div>
+                    </div>
+                    <div class="team-stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-trophy"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="teamWins">0</h3>
+                            <p>Vitórias</p>
+                        </div>
+                    </div>
+                    <div class="team-stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="teamPoints">0</h3>
+                            <p>Pontos</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="team-overview-grid">
+                    <div class="overview-card">
+                        <div class="card-header">
+                            <h3>Próximas Partidas</h3>
+                        </div>
+                        <div class="card-content">
+                            <div id="nextMatches" class="next-matches">
+                                <div class="loading">Carregando partidas...</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="overview-card">
+                        <div class="card-header">
+                            <h3>Posição na Classificação</h3>
+                        </div>
+                        <div class="card-content">
+                            <div id="teamRanking" class="team-ranking-display">
+                                <div class="loading">Carregando classificação...</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Players Section -->
+            <section id="team-players" class="team-section">
+                <div class="team-header">
+                    <h2>Meus Jogadores</h2>
+                    <div class="team-actions">
+                        <button class="btn btn-primary" onclick="showAddPlayerModal()">
+                            <i class="fas fa-plus"></i> Cadastrar Jogador
+                        </button>
+                    </div>
+                </div>
+
+                <div class="players-filters">
+                    <select id="positionFilter" onchange="filterTeamPlayers()">
+                        <option value="">Todas as Posições</option>
+                        <option value="Goleiro">Goleiro</option>
+                        <option value="Zagueiro">Zagueiro</option>
+                        <option value="Lateral">Lateral</option>
+                        <option value="Volante">Volante</option>
+                        <option value="Meio-campo">Meio-campo</option>
+                        <option value="Atacante">Atacante</option>
+                    </select>
+                    <select id="playerStatusFilter" onchange="filterTeamPlayers()">
+                        <option value="">Todos os Status</option>
+                        <option value="Aprovado">Aprovado</option>
+                        <option value="Pendente">Pendente</option>
+                        <option value="Rejeitado">Rejeitado</option>
+                    </select>
+                </div>
+
+                <div class="players-grid" id="teamPlayersGrid">
+                    <div class="loading">Carregando jogadores...</div>
+                </div>
+            </section>
+
+            <!-- Matches Section -->
+            <section id="team-matches" class="team-section">
+                <div class="team-header">
+                    <h2>Nossas Partidas</h2>
+                    <div class="team-filters">
+                        <select id="matchStatusFilter" onchange="filterTeamMatches()">
+                            <option value="">Todos os Status</option>
+                            <option value="Agendado">Agendado</option>
+                            <option value="Em Andamento">Em Andamento</option>
+                            <option value="Finalizado">Finalizado</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="team-matches-list" id="teamMatchesList">
+                    <div class="loading">Carregando partidas...</div>
+                </div>
+            </section>
+
+            <!-- Statistics Section -->
+            <section id="team-statistics" class="team-section">
+                <div class="team-header">
+                    <h2>Estatísticas</h2>
+                </div>
+
+                <div class="statistics-grid">
+                    <div class="stat-category">
+                        <h3>Desempenho Geral</h3>
+                        <div class="stat-items">
+                            <div class="stat-item">
+                                <span class="stat-label">Jogos</span>
+                                <span class="stat-value" id="statsGames">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Vitórias</span>
+                                <span class="stat-value" id="statsWins">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Empates</span>
+                                <span class="stat-value" id="statsDraws">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Derrotas</span>
+                                <span class="stat-value" id="statsLosses">0</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stat-category">
+                        <h3>Gols</h3>
+                        <div class="stat-items">
+                            <div class="stat-item">
+                                <span class="stat-label">Gols Pró</span>
+                                <span class="stat-value" id="statsGoalsFor">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Gols Contra</span>
+                                <span class="stat-value" id="statsGoalsAgainst">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Saldo</span>
+                                <span class="stat-value" id="statsGoalDiff">0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="players-stats">
+                    <h3>Artilheiros do Time</h3>
+                    <div id="topScorers" class="top-scorers">
+                        <div class="loading">Carregando artilheiros...</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Profile Section -->
+            <section id="team-profile" class="team-section">
+                <div class="team-header">
+                    <h2>Perfil do Time</h2>
+                    <div class="team-actions">
+                        <button class="btn btn-primary" onclick="saveTeamProfile()">
+                            <i class="fas fa-save"></i> Salvar Alterações
+                        </button>
+                    </div>
+                </div>
+
+                <div class="profile-form">
+                    <form id="teamProfileForm">
+                        <div class="form-section">
+                            <h3>Informações Básicas</h3>
+                            <div class="form-group">
+                                <label for="profileTeamName">Nome do Time</label>
+                                <input type="text" id="profileTeamName" disabled>
+                                <small>Nome não pode ser alterado após o cadastro</small>
+                            </div>
+                            <div class="form-group">
+                                <label for="profileResponsavel">Responsável</label>
+                                <input type="text" id="profileResponsavel">
+                            </div>
+                            <div class="form-group">
+                                <label for="profileEmail">Email</label>
+                                <input type="email" id="profileEmail">
+                            </div>
+                            <div class="form-group">
+                                <label for="profileLogo">Logo do Time</label>
+                                <input type="file" id="profileLogo" accept="image/*">
+                                <small>Formatos aceitos: JPG, PNG (máx. 2MB)</small>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Add Player Modal -->
+    <div id="addPlayerModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Cadastrar Novo Jogador</h3>
+                <span class="close" onclick="closeModal('addPlayerModal')">&times;</span>
+            </div>
+            <form id="addPlayerForm" class="form">
+                <div class="form-group">
+                    <label for="playerName">Nome Completo *</label>
+                    <input type="text" id="playerName" name="nome" required>
+                </div>
+                <div class="form-group">
+                    <label for="playerNickname">Apelido</label>
+                    <input type="text" id="playerNickname" name="apelido">
+                </div>
+                <div class="form-group">
+                    <label for="playerPosition">Posição *</label>
+                    <select id="playerPosition" name="posicao" required>
+                        <option value="">Selecione uma posição</option>
+                        <option value="Goleiro">Goleiro</option>
+                        <option value="Zagueiro">Zagueiro</option>
+                        <option value="Lateral">Lateral</option>
+                        <option value="Volante">Volante</option>
+                        <option value="Meio-campo">Meio-campo</option>
+                        <option value="Atacante">Atacante</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="playerType">Tipo de Jogador *</label>
+                    <select id="playerType" name="tipo" required>
+                        <option value="">Selecione o tipo</option>
+                        <option value="Amador">Amador</option>
+                        <option value="Profissional">Profissional</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="playerPhoto">Foto do Jogador</label>
+                    <input type="file" id="playerPhoto" name="foto" accept="image/*">
+                </div>
+                <div class="form-group">
+                    <label for="playerDocument">Documento (RG/CPF)</label>
+                    <input type="file" id="playerDocument" name="documento" accept=".pdf,.jpg,.jpeg,.png">
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('addPlayerModal')">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Cadastrar Jogador</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay" style="display: none;">
+        <div class="loading-spinner">
+            <i class="fas fa-spinner fa-spin"></i>
+            <p>Carregando...</p>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toast" class="toast"></div>
+
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/team.js"></script>
+</body>
+</html>
