@@ -162,22 +162,73 @@ class ChampionshipManager {
         return new Promise((resolve) => {
             setTimeout(() => {
                 switch (action) {
-                    case 'getData':
+                    case 'getCampeonatoData':
+                    case 'getData': // Compatibilidade
                         resolve({
                             success: true,
                             data: CONFIG.MOCK_DATA.championship
                         });
                         break;
-                    case 'saveData':
+                    case 'addTime':
+                    case 'saveData': // Compatibilidade
                         resolve({
                             success: true,
-                            message: 'Dados salvos (simulação)'
+                            message: 'Time adicionado com sucesso (simulação)',
+                            data: {
+                                ID_Time: Math.floor(Math.random() * 1000),
+                                Nome: params.nome || params.teamName,
+                                TokenAcesso: 'MOCK' + Date.now()
+                            }
+                        });
+                        break;
+                    case 'addJogador':
+                        resolve({
+                            success: true,
+                            message: 'Jogador adicionado com sucesso (simulação)'
+                        });
+                        break;
+                    case 'addJogo':
+                        resolve({
+                            success: true,
+                            message: 'Jogo adicionado com sucesso (simulação)'
+                        });
+                        break;
+                    case 'updatePlacar':
+                        resolve({
+                            success: true,
+                            message: 'Placar atualizado com sucesso (simulação)'
+                        });
+                        break;
+                    case 'addEvento':
+                        resolve({
+                            success: true,
+                            message: 'Evento adicionado com sucesso (simulação)'
+                        });
+                        break;
+                    case 'addSolicitacao':
+                        resolve({
+                            success: true,
+                            message: 'Solicitação adicionada com sucesso (simulação)'
+                        });
+                        break;
+                    case 'updateStatus':
+                        resolve({
+                            success: true,
+                            message: 'Status atualizado com sucesso (simulação)'
+                        });
+                        break;
+                    case 'authenticate':
+                        resolve({
+                            success: true,
+                            message: 'Autenticação bem-sucedida (simulação)',
+                            data: { authenticated: true, Nome: 'Time Mock' }
                         });
                         break;
                     case 'test':
                         resolve({
                             success: true,
-                            message: 'Conexão de teste bem-sucedida (mock)'
+                            message: 'Conexão de teste bem-sucedida (mock)',
+                            version: '2.0.0'
                         });
                         break;
                     default:
@@ -196,10 +247,25 @@ class ChampionshipManager {
         this.hideMessages();
 
         try {
-            const response = await this.makeRequest('getData');
+            const response = await this.makeRequest('getCampeonatoData');
             
             if (response.success) {
-                this.data = response.data || [];
+                // Suportar tanto estrutura nova quanto antiga
+                if (response.data && typeof response.data === 'object') {
+                    if (response.data.times) {
+                        // Nova estrutura com múltiplas abas
+                        this.data = this.convertNewDataToOldFormat(response.data);
+                    } else if (Array.isArray(response.data)) {
+                        // Estrutura antiga (array direto)
+                        this.data = response.data;
+                    } else {
+                        // Outros formatos
+                        this.data = [];
+                    }
+                } else {
+                    this.data = [];
+                }
+                
                 this.renderChampionshipData();
                 this.showMessage(CONFIG.UI.MESSAGES.DATA_LOADED, 'success');
                 debugLog('Dados carregados com sucesso', this.data);
@@ -213,11 +279,65 @@ class ChampionshipManager {
         }
     }
 
+    // Converter nova estrutura de dados para formato compatível com a interface atual
+    convertNewDataToOldFormat(newData) {
+        if (!newData.times || !Array.isArray(newData.times)) {
+            return [];
+        }
+
+        // Converter times para formato da tabela de classificação
+        return newData.times.map((time, index) => {
+            // Calcular estatísticas baseadas nos jogos se disponível
+            let points = 0;
+            let matchesPlayed = 0;
+            let wins = 0;
+            let draws = 0;
+            let losses = 0;
+
+            if (newData.jogos && Array.isArray(newData.jogos)) {
+                const timesGames = newData.jogos.filter(jogo => 
+                    jogo.ID_TimeA === time.ID_Time || jogo.ID_TimeB === time.ID_Time
+                );
+
+                matchesPlayed = timesGames.filter(jogo => jogo.Status === 'Finalizado').length;
+
+                timesGames.forEach(jogo => {
+                    if (jogo.Status === 'Finalizado') {
+                        const isTeamA = jogo.ID_TimeA === time.ID_Time;
+                        const teamScore = isTeamA ? jogo.PlacarA : jogo.PlacarB;
+                        const opponentScore = isTeamA ? jogo.PlacarB : jogo.PlacarA;
+
+                        if (teamScore > opponentScore) {
+                            wins++;
+                            points += 3;
+                        } else if (teamScore === opponentScore) {
+                            draws++;
+                            points += 1;
+                        } else {
+                            losses++;
+                        }
+                    }
+                });
+            }
+
+            return {
+                id: time.ID_Time,
+                teamName: time.Nome,
+                points: points,
+                matchesPlayed: matchesPlayed,
+                wins: wins,
+                draws: draws,
+                losses: losses
+            };
+        });
+    }
+
     // Salvar dados do campeonato
     async saveChampionshipData() {
         const formData = new FormData(document.getElementById('championship-form'));
         const data = {
-            teamName: formData.get('teamName'),
+            nome: formData.get('teamName'),  // Usar campo 'nome' para nova API
+            teamName: formData.get('teamName'), // Manter compatibilidade
             points: parseInt(formData.get('points')),
             matchesPlayed: parseInt(formData.get('matchesPlayed'))
         };
@@ -231,13 +351,13 @@ class ChampionshipManager {
         this.hideMessages();
 
         try {
-            const response = await this.makeRequest('saveData', data);
+            const response = await this.makeRequest('addTime', data);
             
             if (response.success) {
                 this.showMessage(CONFIG.UI.MESSAGES.DATA_SAVED, 'success');
                 document.getElementById('championship-form').reset();
                 await this.loadChampionshipData(); // Recarregar dados
-                debugLog('Dados salvos com sucesso', data);
+                debugLog('Time adicionado com sucesso', data);
             } else {
                 throw new Error(response.error || 'Erro ao salvar dados');
             }
@@ -399,6 +519,92 @@ class ChampionshipManager {
         }
         
         this.showMessage(message, 'error');
+    }
+
+    // Novas funções utilitárias para usar as APIs específicas
+
+    // Adicionar jogador
+    async addJogador(jogadorData) {
+        try {
+            const response = await this.makeRequest('addJogador', jogadorData);
+            return response;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    // Adicionar jogo
+    async addJogo(jogoData) {
+        try {
+            const response = await this.makeRequest('addJogo', jogoData);
+            return response;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    // Atualizar placar
+    async updatePlacar(idJogo, placarA, placarB, status = 'Finalizado') {
+        try {
+            const response = await this.makeRequest('updatePlacar', {
+                idJogo: idJogo,
+                placarA: placarA,
+                placarB: placarB,
+                status: status
+            });
+            return response;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    // Adicionar evento
+    async addEvento(eventoData) {
+        try {
+            const response = await this.makeRequest('addEvento', eventoData);
+            return response;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    // Adicionar solicitação
+    async addSolicitacao(solicitacaoData) {
+        try {
+            const response = await this.makeRequest('addSolicitacao', solicitacaoData);
+            return response;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    // Atualizar status
+    async updateStatus(tabela, id, status, statusColumn) {
+        try {
+            const response = await this.makeRequest('updateStatus', {
+                tabela: tabela,
+                id: id,
+                status: status,
+                statusColumn: statusColumn
+            });
+            return response;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    // Autenticar
+    async authenticate(token, idTime = null) {
+        try {
+            const params = { token: token };
+            if (idTime) {
+                params.idTime = idTime;
+            }
+            const response = await this.makeRequest('authenticate', params);
+            return response;
+        } catch (error) {
+            throw error;
+        }
     }
 }
 
