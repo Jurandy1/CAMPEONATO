@@ -60,14 +60,20 @@ function showSection(sectionId) {
 // Load data for specific section
 async function loadSectionData(sectionId) {
     switch (sectionId) {
-        case 'teams':
+        case 'home':
+            await loadHomeData();
+            break;
+        case 'times':
             await loadTeams();
             break;
-        case 'matches':
+        case 'jogos':
             await loadMatches();
             break;
-        case 'rankings':
+        case 'classificacao':
             await loadRankings();
+            break;
+        case 'artilharia':
+            await loadTopScorers();
             break;
         default:
             break;
@@ -117,11 +123,8 @@ function setupEventListeners() {
 // Load Initial Data
 async function loadInitialData() {
     try {
-        // Load teams for home section
-        await loadTeams();
-        
-        // Load recent matches
-        await loadRecentMatches();
+        // Load home page data
+        await loadHomeData();
         
         // Update navigation based on auth
         auth.updateNavigationPermissions();
@@ -130,6 +133,302 @@ async function loadInitialData() {
         console.error('Error loading initial data:', error);
         showToast('Erro ao carregar dados iniciais', 'error');
     }
+}
+
+// Load home page data
+async function loadHomeData() {
+    try {
+        // Load top 5 teams for ranking preview
+        await loadHomeRankings();
+        
+        // Load upcoming matches
+        await loadUpcomingMatches();
+        
+        // Load recent results
+        await loadRecentResults();
+        
+        // Load top scorers
+        await loadHomeTopScorers();
+        
+    } catch (error) {
+        console.error('Error loading home data:', error);
+    }
+}
+
+// Load home rankings (top 5)
+async function loadHomeRankings() {
+    try {
+        const container = document.getElementById('homeRankings');
+        if (!container) return;
+        
+        container.innerHTML = '<div class="loading">Carregando...</div>';
+        
+        const rankings = await cachedAPI.getRankings();
+        
+        if (!rankings || rankings.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state-mini">
+                    <p>Classificação será gerada após as primeiras partidas</p>
+                </div>
+            `;
+            return;
+        }
+        
+        const top5 = rankings.slice(0, 5);
+        const html = `
+            <div class="mini-rankings">
+                ${top5.map((team, index) => `
+                    <div class="mini-rank-item">
+                        <span class="position">${index + 1}°</span>
+                        <div class="team-info">
+                            ${team.LogoURL ? 
+                                `<img src="${team.LogoURL}" alt="${team.Nome}" class="team-logo-mini">` :
+                                `<i class="fas fa-shield-alt"></i>`
+                            }
+                            <span class="team-name">${team.Nome}</span>
+                        </div>
+                        <span class="points">${team.pontos || 0} pts</span>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+        
+        container.innerHTML = html;
+        
+    } catch (error) {
+        console.error('Error loading home rankings:', error);
+        document.getElementById('homeRankings').innerHTML = '<div class="error-mini">Erro ao carregar</div>';
+    }
+}
+
+// Load upcoming matches
+async function loadUpcomingMatches() {
+    try {
+        const container = document.getElementById('upcomingMatches');
+        if (!container) return;
+        
+        container.innerHTML = '<div class="loading">Carregando...</div>';
+        
+        const matches = await cachedAPI.getMatches(null, 'Agendado');
+        
+        if (!matches || matches.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state-mini">
+                    <p>Nenhuma partida agendada</p>
+                </div>
+            `;
+            return;
+        }
+        
+        const upcoming = matches.slice(0, 3);
+        const html = `
+            <div class="mini-matches">
+                ${upcoming.map(match => `
+                    <div class="mini-match-item">
+                        <div class="match-date">${formatDate(match.DataHora)}</div>
+                        <div class="match-teams">
+                            <span class="team">${match.TimeA?.Nome || 'TBD'}</span>
+                            <span class="vs">×</span>
+                            <span class="team">${match.TimeB?.Nome || 'TBD'}</span>
+                        </div>
+                        <div class="match-time">${formatTime(match.DataHora)}</div>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+        
+        container.innerHTML = html;
+        
+    } catch (error) {
+        console.error('Error loading upcoming matches:', error);
+        document.getElementById('upcomingMatches').innerHTML = '<div class="error-mini">Erro ao carregar</div>';
+    }
+}
+
+// Load recent results
+async function loadRecentResults() {
+    try {
+        const container = document.getElementById('recentResults');
+        if (!container) return;
+        
+        container.innerHTML = '<div class="loading">Carregando...</div>';
+        
+        const matches = await cachedAPI.getMatches(null, 'Finalizado');
+        
+        if (!matches || matches.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state-mini">
+                    <p>Nenhum resultado disponível</p>
+                </div>
+            `;
+            return;
+        }
+        
+        const recent = matches.slice(0, 3);
+        const html = `
+            <div class="mini-results">
+                ${recent.map(match => `
+                    <div class="mini-result-item">
+                        <div class="result-teams">
+                            <span class="team">${match.TimeA?.Nome || 'TBD'}</span>
+                            <span class="score">${match.PlacarA} × ${match.PlacarB}</span>
+                            <span class="team">${match.TimeB?.Nome || 'TBD'}</span>
+                        </div>
+                        <div class="result-date">${formatDate(match.DataHora)}</div>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+        
+        container.innerHTML = html;
+        
+    } catch (error) {
+        console.error('Error loading recent results:', error);
+        document.getElementById('recentResults').innerHTML = '<div class="error-mini">Erro ao carregar</div>';
+    }
+}
+
+// Load top scorers for home
+async function loadHomeTopScorers() {
+    try {
+        const container = document.getElementById('topScorers');
+        if (!container) return;
+        
+        container.innerHTML = '<div class="loading">Carregando...</div>';
+        
+        // This would call a specific API for top scorers
+        // For now, using mock data structure
+        const scorers = await getTopScorers();
+        
+        if (!scorers || scorers.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state-mini">
+                    <p>Artilheiros serão calculados após os primeiros gols</p>
+                </div>
+            `;
+            return;
+        }
+        
+        const top3 = scorers.slice(0, 3);
+        const html = `
+            <div class="mini-scorers">
+                ${top3.map((player, index) => `
+                    <div class="mini-scorer-item">
+                        <span class="position">${index + 1}°</span>
+                        <div class="player-info">
+                            <span class="player-name">${player.Nome}</span>
+                            <span class="team-name">${player.Time}</span>
+                        </div>
+                        <span class="goals">${player.gols} gols</span>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+        
+        container.innerHTML = html;
+        
+    } catch (error) {
+        console.error('Error loading top scorers:', error);
+        document.getElementById('topScorers').innerHTML = '<div class="error-mini">Erro ao carregar</div>';
+    }
+}
+
+// Get top scorers (placeholder - would call actual API)
+async function getTopScorers() {
+    try {
+        // This would be replaced with actual API call
+        return await api.getStatistics(null, null, 'topScorers');
+    } catch (error) {
+        // Mock data for development
+        return [
+            { Nome: 'João Silva', Time: 'Flamengo', gols: 15 },
+            { Nome: 'Pedro Santos', Time: 'Palmeiras', gols: 12 },
+            { Nome: 'Carlos Lima', Time: 'São Paulo', gols: 10 }
+        ];
+    }
+}
+
+// Load full top scorers table
+async function loadTopScorers() {
+    try {
+        const container = document.getElementById('scorersTable');
+        if (!container) return;
+        
+        container.innerHTML = '<div class="loading">Carregando artilheiros...</div>';
+        
+        const scorers = await getTopScorers();
+        
+        if (!scorers || scorers.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-star"></i>
+                    <h3>Nenhum artilheiro ainda</h3>
+                    <p>A tabela será atualizada após os primeiros gols</p>
+                </div>
+            `;
+            return;
+        }
+        
+        const tableHTML = createScorersTable(scorers);
+        container.innerHTML = tableHTML;
+        
+    } catch (error) {
+        console.error('Error loading top scorers:', error);
+        document.getElementById('scorersTable').innerHTML = `
+            <div class="error-state">
+                <i class="fas fa-exclamation-triangle"></i>
+                <h3>Erro ao carregar artilheiros</h3>
+                <p>Tente novamente em alguns instantes</p>
+                <button class="btn btn-primary" onclick="loadTopScorers()">
+                    <i class="fas fa-refresh"></i> Tentar Novamente
+                </button>
+            </div>
+        `;
+    }
+}
+
+// Create scorers table HTML
+function createScorersTable(scorers) {
+    const headerHTML = `
+        <table class="scorers-table">
+            <thead>
+                <tr>
+                    <th>Pos</th>
+                    <th>Jogador</th>
+                    <th>Time</th>
+                    <th>Gols</th>
+                    <th>Jogos</th>
+                    <th>Média</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+    
+    const rowsHTML = scorers.map((player, index) => `
+        <tr>
+            <td class="position">${index + 1}°</td>
+            <td class="player">
+                <div class="player-info">
+                    ${player.FotoURL ? 
+                        `<img src="${player.FotoURL}" alt="${player.Nome}" class="player-photo">` :
+                        `<i class="fas fa-user-circle"></i>`
+                    }
+                    <span>${player.Nome}</span>
+                </div>
+            </td>
+            <td>${player.Time}</td>
+            <td class="goals"><strong>${player.gols}</strong></td>
+            <td>${player.jogos || 0}</td>
+            <td>${player.jogos ? (player.gols / player.jogos).toFixed(1) : '0.0'}</td>
+        </tr>
+    `).join('');
+    
+    const footerHTML = `
+            </tbody>
+        </table>
+    `;
+    
+    return headerHTML + rowsHTML + footerHTML;
 }
 
 // Teams Management
@@ -656,14 +955,71 @@ async function loadMatchesWithFilter(rodada, status) {
     }
 }
 
-// Load recent matches for home section
-async function loadRecentMatches() {
+// Login functions
+async function handleLogin(event) {
+    event.preventDefault();
+    
     try {
-        // This would show recent matches on the home page
-        // Implementation depends on UI design
-        console.log('Loading recent matches...');
+        const activeTab = document.querySelector('.login-tab.active');
+        const isTeamLogin = activeTab.id === 'teamLogin';
+        
+        if (isTeamLogin) {
+            const token = document.getElementById('teamToken').value;
+            if (!token) {
+                showToast('Digite o token do time', 'warning');
+                return;
+            }
+            
+            const result = await api.authenticateTeam(token);
+            if (result.success) {
+                auth.setTeamAuth(result.team, token);
+                showToast('Login realizado com sucesso!', 'success');
+                closeModal('loginModal');
+                window.location.href = 'team-dashboard.html';
+            } else {
+                throw new Error(result.message || 'Token inválido');
+            }
+        } else {
+            const password = document.getElementById('adminPassword').value;
+            if (!password) {
+                showToast('Digite a senha de administrador', 'warning');
+                return;
+            }
+            
+            const result = await api.authenticateAdmin(password);
+            if (result.success) {
+                auth.setAdminAuth();
+                showToast('Login de administrador realizado!', 'success');
+                closeModal('loginModal');
+                window.location.href = 'admin.html';
+            } else {
+                throw new Error(result.message || 'Senha inválida');
+            }
+        }
+        
     } catch (error) {
-        console.error('Error loading recent matches:', error);
+        handleApiError(error, 'login');
+    }
+}
+
+// Toggle login tabs
+function toggleLoginTab(tabType) {
+    const teamTab = document.getElementById('teamLogin');
+    const adminTab = document.getElementById('adminLogin');
+    const tabButtons = document.querySelectorAll('.tab-btn');
+    
+    // Remove active classes
+    teamTab.classList.remove('active');
+    adminTab.classList.remove('active');
+    tabButtons.forEach(btn => btn.classList.remove('active'));
+    
+    // Add active class to selected tab
+    if (tabType === 'team') {
+        teamTab.classList.add('active');
+        tabButtons[0].classList.add('active');
+    } else {
+        adminTab.classList.add('active');
+        tabButtons[1].classList.add('active');
     }
 }
 
@@ -720,4 +1076,5 @@ window.editMatchResult = editMatchResult;
 window.generateMatches = generateMatches;
 window.filterMatches = filterMatches;
 window.copyToken = copyToken;
-window.toggleLoginFields = toggleLoginFields;
+window.toggleLoginTab = toggleLoginTab;
+window.loadTopScorers = loadTopScorers;
