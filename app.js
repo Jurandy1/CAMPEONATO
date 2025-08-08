@@ -162,22 +162,19 @@ class ChampionshipManager {
         return new Promise((resolve) => {
             setTimeout(() => {
                 switch (action) {
-                    case 'getData':
+
                         resolve({
                             success: true,
                             data: CONFIG.MOCK_DATA.championship
                         });
                         break;
-                    case 'saveData':
-                        resolve({
-                            success: true,
-                            message: 'Dados salvos (simulação)'
+
                         });
                         break;
                     case 'test':
                         resolve({
                             success: true,
-                            message: 'Conexão de teste bem-sucedida (mock)'
+
                         });
                         break;
                     default:
@@ -196,10 +193,7 @@ class ChampionshipManager {
         this.hideMessages();
 
         try {
-            const response = await this.makeRequest('getData');
-            
-            if (response.success) {
-                this.data = response.data || [];
+
                 this.renderChampionshipData();
                 this.showMessage(CONFIG.UI.MESSAGES.DATA_LOADED, 'success');
                 debugLog('Dados carregados com sucesso', this.data);
@@ -213,11 +207,12 @@ class ChampionshipManager {
         }
     }
 
+
     // Salvar dados do campeonato
     async saveChampionshipData() {
         const formData = new FormData(document.getElementById('championship-form'));
         const data = {
-            teamName: formData.get('teamName'),
+
             points: parseInt(formData.get('points')),
             matchesPlayed: parseInt(formData.get('matchesPlayed'))
         };
@@ -231,13 +226,13 @@ class ChampionshipManager {
         this.hideMessages();
 
         try {
-            const response = await this.makeRequest('saveData', data);
+
             
             if (response.success) {
                 this.showMessage(CONFIG.UI.MESSAGES.DATA_SAVED, 'success');
                 document.getElementById('championship-form').reset();
                 await this.loadChampionshipData(); // Recarregar dados
-                debugLog('Dados salvos com sucesso', data);
+
             } else {
                 throw new Error(response.error || 'Erro ao salvar dados');
             }
@@ -400,6 +395,7 @@ class ChampionshipManager {
         
         this.showMessage(message, 'error');
     }
+
 }
 
 // Inicializar aplicação quando DOM estiver pronto

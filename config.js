@@ -32,7 +32,7 @@ const CONFIG = {
             { id: 4, teamName: 'Equipe D', points: 6, matchesPlayed: 5, wins: 2, draws: 0, losses: 3 },
             { id: 5, teamName: 'Equipe E', points: 3, matchesPlayed: 5, wins: 1, draws: 0, losses: 4 },
             { id: 6, teamName: 'Equipe F', points: 0, matchesPlayed: 5, wins: 0, draws: 0, losses: 5 }
-        ]
+
     },
 
     // Configurações de UI
