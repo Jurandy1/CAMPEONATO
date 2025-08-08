@@ -32,36 +32,7 @@ const CONFIG = {
             { id: 4, teamName: 'Equipe D', points: 6, matchesPlayed: 5, wins: 2, draws: 0, losses: 3 },
             { id: 5, teamName: 'Equipe E', points: 3, matchesPlayed: 5, wins: 1, draws: 0, losses: 4 },
             { id: 6, teamName: 'Equipe F', points: 0, matchesPlayed: 5, wins: 0, draws: 0, losses: 5 }
-        ],
-        // Nova estrutura completa para compatibilidade
-        campeonato: {
-            times: [
-                { ID_Time: 1, Nome: 'Equipe A', LogoURL: '', Responsavel: 'João Silva', EmailResponsavel: 'joao@equipea.com', TokenAcesso: 'EQUIPEA12345678' },
-                { ID_Time: 2, Nome: 'Equipe B', LogoURL: '', Responsavel: 'Maria Santos', EmailResponsavel: 'maria@equipeb.com', TokenAcesso: 'EQUIPEB12345678' },
-                { ID_Time: 3, Nome: 'Equipe C', LogoURL: '', Responsavel: 'Pedro Costa', EmailResponsavel: 'pedro@equipec.com', TokenAcesso: 'EQUIPEC12345678' }
-            ],
-            jogadores: [
-                { ID_Jogador: 1, ID_Time: 1, Nome: 'Jogador A1', Apelido: 'A1', Posicao: 'Atacante', Tipo: 'Titular', FotoURL: '', DocURL: '', Status: 'Aprovado' },
-                { ID_Jogador: 2, ID_Time: 1, Nome: 'Jogador A2', Apelido: 'A2', Posicao: 'Meio', Tipo: 'Titular', FotoURL: '', DocURL: '', Status: 'Aprovado' },
-                { ID_Jogador: 3, ID_Time: 2, Nome: 'Jogador B1', Apelido: 'B1', Posicao: 'Defesa', Tipo: 'Titular', FotoURL: '', DocURL: '', Status: 'Aprovado' }
-            ],
-            jogos: [
-                { ID_Jogo: 1, Rodada: 1, DataHora: '2024-01-15 16:00:00', Local: 'Campo A', ID_TimeA: 1, ID_TimeB: 2, PlacarA: 2, PlacarB: 1, Status: 'Finalizado' },
-                { ID_Jogo: 2, Rodada: 1, DataHora: '2024-01-16 18:00:00', Local: 'Campo B', ID_TimeA: 3, ID_TimeB: 1, PlacarA: 0, PlacarB: 0, Status: 'Agendado' }
-            ],
-            eventos: [
-                { ID_Evento: 1, ID_Jogo: 1, ID_Jogador: 1, TipoEvento: 'Gol', Minuto: 25 },
-                { ID_Evento: 2, ID_Jogo: 1, ID_Jogador: 2, TipoEvento: 'Assistência', Minuto: 25 }
-            ],
-            solicitacoes: [
-                { ID_Solicitacao: 1, DataHora: '2024-01-10 10:00:00', Origem: 'App Web', TipoSolicitacao: 'Cadastro Jogador', Dados: '{"jogador":"Novo Jogador"}', Status: 'Pendente' }
-            ],
-            configuracoes: [
-                { Chave: 'temporada_atual', Valor: '2024' },
-                { Chave: 'max_jogadores_por_time', Valor: '25' },
-                { Chave: 'tempo_jogo_minutos', Valor: '90' }
-            ]
-        }
+
     },
 
     // Configurações de UI
