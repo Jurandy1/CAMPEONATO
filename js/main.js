@@ -484,7 +484,7 @@ function showTokenModal(token) {
                             font-size: 1.2rem; 
                             text-align: center; 
                             background: #f8f9fa; 
-                            border: 2px solid #667eea; 
+                            border: 2px solid #1e3c72; 
                             border-radius: 8px; 
                             margin: 20px 0;
                             font-weight: bold;
