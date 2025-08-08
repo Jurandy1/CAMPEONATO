@@ -7,7 +7,7 @@
 
 .team-sidebar {
     width: 280px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #1e3c72 0%, #3b4371 100%);
     color: white;
     position: sticky;
     top: 80px;
@@ -170,7 +170,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #1e3c72 0%, #3b4371 100%);
     color: white;
 }
 
@@ -238,7 +238,7 @@
     padding: 15px;
     background: #f8f9fa;
     border-radius: 8px;
-    border-left: 4px solid #667eea;
+    border-left: 4px solid #1e3c72;
 }
 
 .next-match-info h4 {
@@ -268,7 +268,7 @@
 .ranking-position {
     font-size: 3rem;
     font-weight: 700;
-    color: #667eea;
+    color: #1e3c72;
     margin-bottom: 10px;
 }
 
@@ -315,7 +315,7 @@
 
 .players-filters select:focus {
     outline: none;
-    border-color: #667eea;
+    border-color: #1e3c72;
 }
 
 .players-grid {
@@ -350,11 +350,11 @@
     height: 60px;
     border-radius: 50%;
     object-fit: cover;
-    border: 3px solid #667eea;
+    border: 3px solid #1e3c72;
 }
 
 .player-photo.default {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #1e3c72 0%, #3b4371 100%);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -553,7 +553,7 @@
 .stat-value {
     font-size: 1.3rem;
     font-weight: 700;
-    color: #667eea;
+    color: #1e3c72;
 }
 
 /* Top Scorers */
@@ -590,7 +590,7 @@
     width: 30px;
     height: 30px;
     border-radius: 50%;
-    background: #667eea;
+    background: #1e3c72;
     color: white;
     display: flex;
     align-items: center;
@@ -618,7 +618,7 @@
 .scorer-goals {
     font-size: 1.5rem;
     font-weight: 700;
-    color: #667eea;
+    color: #1e3c72;
 }
 
 /* Profile Form */
@@ -670,7 +670,7 @@
 .form-section input:focus,
 .form-section select:focus {
     outline: none;
-    border-color: #667eea;
+    border-color: #1e3c72;
 }
 
 .form-section input:disabled {

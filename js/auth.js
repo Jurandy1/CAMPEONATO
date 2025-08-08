@@ -314,7 +314,7 @@ class AuthManager {
         }
         
         // Load team dashboard
-        window.location.href = 'team-dashboard.html';
+        window.location.href = 'painel-time.html';
     }
 
     // Show team players

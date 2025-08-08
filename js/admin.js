@@ -236,7 +236,7 @@ async function loadAdminTeams() {
                     <div style="display: flex; align-items: center; gap: 10px;">
                         ${team.LogoURL ? 
                             `<img src="${team.LogoURL}" alt="${team.Nome}" style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover;">` :
-                            `<div style="width: 30px; height: 30px; border-radius: 50%; background: #667eea; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.8rem;"><i class="fas fa-shield-alt"></i></div>`
+                            `<div style="width: 30px; height: 30px; border-radius: 50%; background: #1e3c72; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.8rem;"><i class="fas fa-shield-alt"></i></div>`
                         }
                         <span>${team.Nome}</span>
                     </div>
@@ -698,7 +698,7 @@ function createAdminRankingsTable(rankings) {
                                 <div style="display: flex; align-items: center; gap: 10px;">
                                     ${team.LogoURL ? 
                                         `<img src="${team.LogoURL}" alt="${team.Nome}" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;">` :
-                                        `<i class="fas fa-shield-alt" style="color: #667eea;"></i>`
+                                        `<i class="fas fa-shield-alt" style="color: #1e3c72;"></i>`
                                     }
                                     <span>${team.Nome}</span>
                                 </div>
@@ -710,7 +710,7 @@ function createAdminRankingsTable(rankings) {
                             <td>${team.golsPro || 0}</td>
                             <td>${team.golsContra || 0}</td>
                             <td>${(team.golsPro || 0) - (team.golsContra || 0)}</td>
-                            <td><strong style="color: #667eea;">${team.pontos || 0}</strong></td>
+                            <td><strong style="color: #1e3c72;">${team.pontos || 0}</strong></td>
                             <td>
                                 <button class="btn-action btn-view" onclick="viewTeamDetails('${team.ID_Time}')">
                                     <i class="fas fa-eye"></i>
